@@ -10,6 +10,7 @@ const app = express();
 // 降低漏改到的風險 -> 降低程式出錯的風險
 const port = process.env.SERVER_PORT;
 
+//下次會介紹為什麼安裝這個套件
 const cors = require("cors");
 app.use(cors());
 
