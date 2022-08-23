@@ -1,0 +1,4 @@
+node_modules
+.env
+# .dotenv
+# 此檔可以避免東西推上github
