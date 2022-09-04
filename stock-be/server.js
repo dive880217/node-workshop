@@ -4,11 +4,38 @@ const app = express();
 // 初始化 dotenv
 require("dotenv").config();
 
+const path = require("path");
+
 // 在程式碼中，不要讓某些常數散亂在專案的各處
 // 至少在同一個檔案中，可以放到最上方統一管理
 // 目標是: 只需要改一個地方，全部的地方就生效
 // 降低漏改到的風險 -> 降低程式出錯的風險
 const port = process.env.SERVER_PORT || 3002;
+
+// 啟用 session
+const expressSession = require('express-session');
+// 把 session 存在硬碟中
+var FileStore = require('session-file-store')(expressSession);
+app.use(
+  expressSession({
+    store: new FileStore({
+      // session 儲存的路徑
+      path: path.join(__dirname, '..', 'sessions'),
+    }),
+    secret: process.env.SESSION_SECRET,
+    // 如果 session 沒有改變的話，要不要重新儲存一次？
+    resave: false,
+    // 還沒初始化的，要不要存
+    saveUninitialized: false,
+  })
+);
+
+
+
+
+
+
+
 
 // npm i cors
 const cors = require("cors");
@@ -36,6 +63,15 @@ app.use(express.json());
 app.set("view engine", "pug");
 // 告訴 express 視圖在哪裡
 app.set("views", "views");
+
+// 設置靜態檔案
+
+// express.static => 讓靜態檔案可以有網址
+// http://localhost:3002/uploads/檔案名稱
+app.use(express.static(path.join(__dirname, "public")));
+// 或是給 prefix
+// http://localhost:3002/public/uploads/檔案名稱
+// app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // 測試 server side render 的寫法
 app.get("/ssr", (req, res, next) => {

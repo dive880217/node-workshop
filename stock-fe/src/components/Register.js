@@ -6,8 +6,9 @@ const Register = () => {
   const [member, setMember] = useState({
     email: "dive880217@gmail.com",
     name: "Peter",
-    password: "hds56833",
-    confirmPassword: "hds56833",
+    password: "12345",
+    confirmPassword: "12345",
+    photo: "",
   });
 
   function handleChange(e) {
@@ -17,13 +18,33 @@ const Register = () => {
     // newMember['email']
     newMember[e.target.name] = e.target.value;
     setMember(newMember);
+
+    // 比較潮的寫法
+    // setMember({ ...member, [e.target.name]: e.target.value });
+  }
+
+  function handleUpload(e) {
+    // type=file 的 input
+    // 選好的檔案是放在 e.target.files[0]
+    setMember({ ...member, photo: e.target.files[0] });
   }
 
   async function handleSubmit(e) {
     // 把預設行為關掉
     e.preventDefault();
     try {
-      let response = await axios.post(`${API_URL}/auth/register`, member);
+      // 方法1: 沒有圖片上傳、單純 post 一個 json 物件
+      // let response = await axios.post(`${API_URL}/auth/register`, member);
+      // console.log(response.data);
+
+      // 方法2: 要上傳圖片 FormData
+      let formData = new FormData();
+      formData.append("email", member.email);
+      formData.append("name", member.name);
+      formData.append("password", member.password);
+      formData.append("confirmPassword", member.confirmPassword);
+      formData.append("photo", member.photo);
+      let response = await axios.post(`${API_URL}/auth/register`, formData);
       console.log(response.data);
     } catch (e) {
       console.error("register", e);
@@ -108,6 +129,7 @@ const Register = () => {
           type="file"
           id="photo"
           name="photo"
+          onChange={handleUpload}
         />
       </div>
       <button
