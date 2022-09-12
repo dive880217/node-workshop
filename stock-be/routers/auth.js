@@ -98,9 +98,7 @@ router.post(
     // 檢查 email 有沒有重複 -> 不能有重複
     // 方法1: 交給 DB: 把 email 欄位設定成 unique
     // 方法2: 我們自己去檢查 -> 去資料撈撈看這個 email 有沒有存在 -> 可能會有 race condition
-    let [members] = await pool.execute(
-      "SELECT * FROM members WHERE email = ?",
-      [req.body.email]
+    let [members] = await pool.execute("SELECT * FROM members WHERE email = ?",[req.body.email]
     );
     if (members.length > 0) {
       // 如果有，回覆 400 跟錯誤訊息
@@ -150,12 +148,18 @@ router.post("/api/1.0/auth/login", async (req, res, next) => {
     name: member.name,
     email: member.email,
     photo: member.photo,
+    loginDt: new Date().toISOString(),
   };
   // 把資料寫進 session 裡
   req.session.member = saveMember;
 
   // 回覆前端登入成功
   res.json(saveMember);
+});
+
+router.get("/api/1.0/auth/logout", (req, res, next) => {
+  req.session.member = null;
+  res.json({ message: "登出成功" });
 });
 
 module.exports = router;

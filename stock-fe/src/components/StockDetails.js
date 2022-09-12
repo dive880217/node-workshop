@@ -20,7 +20,10 @@ const StockDetails = () => {
     let getStockDetail = async () => {
       // 1. axios.get -> 在哪個 useEffect 裡做？
       let response = await axios.get(
-        `${API_URL}/stocks/${stockId}?page=${page}`
+        `${API_URL}/stocks/${stockId}?page=${page}`,
+        {
+          withCredentials: true,
+        }
       );
       // 2. setData
       setData(response.data.data);
